@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import * as actionTypes from '../reducers/actions'
 import { act } from 'react-dom/test-utils';
 
+
 const Notes = (props) => {
   const [input, setInput] = useState('')
 
@@ -17,10 +18,10 @@ const handleSubmit = (e, input, setInput) => {
 
 
 useEffect(()=>{
-   
     props.asyncrequest()
   },[]);
 
+  
   return(
     <div className="container">
       <h2 className="app-title">To Do App</h2>
@@ -35,12 +36,14 @@ useEffect(()=>{
   );
   }
 
+  
   const mapStateToProps = (state) => {
     return {
       notes : state.notes
     }
   }
 
+  
   const mapDispatchToProps = dispatch => {
     return {
     asyncrequest : () => dispatch(actionTypes.fetchItems()),
