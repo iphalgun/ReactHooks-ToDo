@@ -3,75 +3,33 @@ import Note from './Note'
 import '../App.css';
 import { connect } from 'react-redux';
 import * as actionTypes from '../reducers/actions'
+import { act } from 'react-dom/test-utils';
 
 const Notes = (props) => {
-  //const {requestApi} = props;
-  const[notes, setNotes] = useState([])
   const [input, setInput] = useState('')
 
-const requestUsersAction = () => { // container
-  
-    fetch('https://tododemo-5d7d3.firebaseio.com/notes.json')
-    .then(response=>response.json())
-    .then(responseData=>{
-        const loadedEntry=[];
-        debugger;
-        console.log('data');
-        for(const key in responseData)
-        {
-            loadedEntry.push({
-                id: key,
-                message:responseData[key].name
-            });
-        }
-        props.requestApi(loadedEntry);
-        //setNotes(loadedEntry);
-    })
-  
-};
 
-const handleSubmit = (e, notes, setNotes, input, setInput) => {
+const handleSubmit = (e, input, setInput) => {
   e.preventDefault()
-  
-  fetch('https://tododemo-5d7d3.firebaseio.com/notes.json',{
-        method:'POST',
-        body: JSON.stringify({name:input}),
-        headers:{'Content-type':'application/json'}
-    }).then(response=>{
-        return response.json();
-    }).then(responseData=>{
-        setNotes([...notes, {id:responseData.name, message: input}])
-    });
-    console.log('0')
-    setInput('')
+  props.submit({message: input})
+  setInput('')
 }
 
-const deleteNote = (id, notes, setNotes) => {
-  //setNotes(notes.filter(note => note.id != id))
 
-    fetch(`https://tododemo-5d7d3.firebaseio.com/notes/${id}.json`,{
-          method:'DELETE',
-      }).then(response=>{
-          setNotes(prevEntry=>
-              prevEntry.filter(notes=>notes.id!==id)
-        );
-      })
-  }
-  
-  useEffect(()=>{
-    //requestApi();
-    requestUsersAction();
+useEffect(()=>{
+   
+    props.asyncrequest()
   },[]);
 
   return(
     <div className="container">
       <h2 className="app-title">To Do App</h2>
-        <form onSubmit={(e) => handleSubmit(e, notes, setNotes, input, setInput)}>
+        <form onSubmit={(e) => handleSubmit(e, input, setInput)}>
         <input className="a" onChange={(e) => setInput(e.target.value)} value={input}/>
         <button className="b">Add To Do</button>
       </form>
-      {notes.map(note => (
-          <Note message={note.message} id={note.id} deleteNote={(id) => deleteNote(id, notes, setNotes)}/>
+      {props.notes.map(note => (
+          <Note message={note.message} id={note.id} deleteNote={(id) => props.delete(id)}/>
         ))}
     </div>
   );
@@ -85,8 +43,9 @@ const deleteNote = (id, notes, setNotes) => {
 
   const mapDispatchToProps = dispatch => {
     return {
-    requestApi : (data) => dispatch(actionTypes.receiveUsers(data)),
-    delete : (id) => dispatch(actionTypes.deleteUsers(id))
+    asyncrequest : () => dispatch(actionTypes.fetchItems()),
+    submit : (entry) => dispatch(actionTypes.saveProducts(entry)),
+    delete : (id) => dispatch(actionTypes.deleteProducts(id))
     }
 };
 

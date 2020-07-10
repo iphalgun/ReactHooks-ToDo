@@ -1,46 +1,40 @@
 import * as actionTypes from './actions';
 
 const initialState = {
-    notes: [],
-    input: '',
-    error: null
+    notes: []
 }
 
 const rootReducer = (state = initialState, action) => {
     switch(action.type)
     {
-        case actionTypes.HANDLE_SUBMIT:
+            case actionTypes.POST_USERS:
+              console.log(action.payload.entry)
             return {
-      //          ...state,
-        //        notes : {
-          //          ...state.notes,
-            //        [action.notesName]:
-              //  }
+                ...state,
+                notes:[...state.notes, action.payload.entry]
             }
+
         case actionTypes.DELETE_USERS:
-              const updatedArray = state.notes.filter(note => note.id !== action.id);
+              console.log(action.payload.id)
+              const updatedArray = state.notes.filter(notes => notes.id !== action.payload.id);
             return {
                 ...state,
                 notes: updatedArray
             }
+
         case actionTypes.RECEIVE_USERS:
-               console.log("it works")
+               console.log(action.payload.data)
             return {
-              //...state,
-              //notes: action.payload.data
+                ...state,
+                notes: action.payload.data   
             }
+
         case actionTypes.FETCH_FAILURE:
             return {
               ...state,
               loading: false,
               error: action.payload.error,
-              items: []
-            }
-        case actionTypes.FETCH_ERROR:
-            return {
-              ...state,
-              pending: false,
-              error: action.error
+              notes: []
             }
         default:
             return state;
